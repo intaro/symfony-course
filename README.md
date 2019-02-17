@@ -1,2 +1,3 @@
 # symfony-course
-Materials for Symfony course
+
+The materials for Symfony course "Creating project StudyOn".
