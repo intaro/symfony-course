@@ -1,0 +1,21 @@
+version: "3.1"
+services:
+    nginx:
+        image: nginx:alpine
+        container_name: app-${APP_NAME}-nginx
+        working_dir: /app
+        volumes:
+          - ${APP_PATH}:/app
+          - ./hosts/app.conf:/etc/nginx/conf.d/default.conf
+          - ./hosts/symfony:/etc/nginx/symfony
+        ports:
+          - "${NGINX_PORT}:80"
+        links:
+          - php
+    php:
+        build: images/php
+        container_name: app-${APP_NAME}-php
+        working_dir: /app
+        volumes:
+            - ${APP_PATH}:/app
+            - ~/.composer:/root/.composer
