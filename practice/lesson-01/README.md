@@ -84,3 +84,27 @@ $ docker-compose down
 ```bash
 $ docker-compose exec php bin/console list
 ```
+
+## Работа с make
+
+Пояснения и синтаксис запуска make-команд из [Makefile](Makefile).
+
+Запустить docker-compose
+```bash
+$ make up
+```
+
+Остановить docker-compose
+```bash
+$ make down
+```
+
+Отчистить кеш Symfony
+```bash
+$ make clear
+```
+
+Установить пакет Composer
+```bash
+$ make install some/package
+```
