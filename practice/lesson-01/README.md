@@ -55,6 +55,17 @@ NGINX_PORT=84
 ^C
 ```
 
+## Регистрация доменов сервисов в локальных хостах
+
+Чтобы обращаться к проектам по доменам, необходимо зарегистрировать их в локальном hosts-файле:
+```bash
+$ sudo cat >> /etc/hosts
+
+# symfony lessons
+127.0.0.1 study-on.local billing.study-on.local
+^C
+```
+
 ## Работа с Docker Compose
 
 Ниже показаны примеры типовых операций с docker-compose. Все операции выполняются в папке, где расположен `docker-compose.yml`.
