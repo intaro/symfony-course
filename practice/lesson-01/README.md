@@ -44,6 +44,17 @@ git init .
 git remote add origin https://github.com/sfuser/study-on.billing.git
 ```
 
+## Указание порта, на котором будет работать Nginx
+
+Для запуска проекта, необходимо указать порт Nginx, по которому вы будете обращаться к проекту:
+```bash
+$ cat >> .env
+
+# external port for nginx
+NGINX_PORT=84
+^C
+```
+
 ## Работа с Docker Compose
 
 Ниже показаны примеры типовых операций с docker-compose. Все операции выполняются в папке, где расположен `docker-compose.yml`.
