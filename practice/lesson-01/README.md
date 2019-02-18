@@ -43,3 +43,18 @@ composer req symfony/phpunit-bridge
 git init .
 git remote add origin https://github.com/sfuser/study-on.billing.git
 ```
+
+## Работа с Docker Compose
+
+Ниже показаны примеры типовых операций с docker-compose. Все операции выполняются в папке, где расположен `docker-compose.yml`.
+
+Запуск сборки
+```bash
+$ docker-compose up -d
+```
+
+Остановка работы сборки
+```bash
+$ docker-compose down
+```
+
