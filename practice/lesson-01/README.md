@@ -38,7 +38,7 @@ git remote add origin https://github.com/sfuser/study-on.git
 ```bash
 cd ~/sf-lessons
 composer create-project symfony/skeleton study-on.billing
-cd  study-on.billing
+cd study-on.billing
 composer req symfony/phpunit-bridge
 git init .
 git remote add origin https://github.com/sfuser/study-on.billing.git
@@ -80,3 +80,7 @@ $ docker-compose up -d
 $ docker-compose down
 ```
 
+Запуск команды внутри запущенного контейнера
+```bash
+$ docker-compose exec php bin/console list
+```
