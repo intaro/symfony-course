@@ -44,4 +44,13 @@ bin/console doctrine:query:sql "select 1"
 bin/console do:query:sql "select 1"
 # The same in docker container
 docker-compose exec php bin/console doctrine:query:sql "select 1"
+
+# Create a migration
+bin/console make:migration
+
+# Apply the migrations
+bin/console doctrine:migrations:migrate
+
+# Revert the migration
+bin/console doctrine:migrations:execute --down 20190203151634
 ```
