@@ -18,5 +18,8 @@ migration:
 migrate:
 	@${CONSOLE} doctrine:migrations:migrate
 
+fixtload:
+	@${CONSOLE} doctrine:fixtures:load
+
 install:
 	@${COMPOSER} install $2

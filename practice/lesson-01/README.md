@@ -114,6 +114,11 @@ $ make migration
 $ make migrate
 ```
 
+Загрузить фикстуры
+```bash
+$ make fixtload
+```
+
 Установить пакет Composer
 ```bash
 $ make install some/package
