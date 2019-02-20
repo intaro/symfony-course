@@ -1,4 +1,6 @@
 version: "3.1"
+volumes:
+  postgres: ~
 services:
   nginx:
     image: nginx:alpine
@@ -11,9 +13,18 @@ services:
       - "${NGINX_PORT}:80"
     links:
       - php
+  postgres:
+    image: postgres:alpine
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: pguser
+      POSTGRES_PASSWORD: pguser
   php:
     build: docker/images/php
     working_dir: /app
     volumes:
       - ${PWD}:/app
       - ~/.composer:/root/.composer
+    links:
+      - postgres
