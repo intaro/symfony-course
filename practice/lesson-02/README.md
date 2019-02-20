@@ -4,6 +4,11 @@
 
 ```
 DATABASE_URL=pgsql://study_on:study_on@127.0.0.1:5432/study_on
+
+# 127.0.0.1 - локальный хост, если СУБД на ходится на том же хосте или в том же контейнере
+# postgres - название контейнера, если СУБД находится в соседнем контейнере
+# docker.for.mac.host.internal - host-машина по отношению к контейнеру на Mac
+# docker.for.win.host.internal - host-машина по отношению к контейнеру на Windows
 ```
 
 ## Пример настроек Doctrine в связке с PostgreSQL

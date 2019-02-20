@@ -12,5 +12,11 @@ down:
 clear:
 	@${CONSOLE} cache:clear
 
+migration:
+	@${CONSOLE} make:migration
+
+migrate:
+	@${CONSOLE} doctrine:migrations:migrate
+
 install:
 	@${COMPOSER} install $2
