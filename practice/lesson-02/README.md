@@ -25,7 +25,7 @@ doctrine:
     dbal:
         # configure these for your database server
         driver: 'pdo_pgsql'
-        server_version: '9.6'
+        server_version: '11'
         url: '%env(resolve:DATABASE_URL)%'
     orm:
         auto_generate_proxy_classes: true
