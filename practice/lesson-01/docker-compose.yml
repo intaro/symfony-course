@@ -26,5 +26,7 @@ services:
     volumes:
       - ${PWD}:/app
       - ~/.composer:/root/.composer
+    environment:
+      - COMPOSER_ALLOW_SUPERUSER=1
     links:
       - postgres
