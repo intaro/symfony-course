@@ -104,6 +104,16 @@ $ make down
 $ make clear
 ```
 
+Создать миграцию
+```bash
+$ make migration
+```
+
+Применить миграции
+```bash
+$ make migrate
+```
+
 Установить пакет Composer
 ```bash
 $ make install some/package
