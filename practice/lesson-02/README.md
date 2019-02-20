@@ -3,12 +3,12 @@
 ## Пример настройки подключения к БД
 
 ```
-DATABASE_URL=pgsql://study_on:study_on@127.0.0.1:5432/study_on
+DATABASE_URL=pgsql://pguser:pguser@postgres:5432/study_on
 
-# 127.0.0.1 - локальный хост, если СУБД на ходится на том же хосте или в том же контейнере
-# postgres - название контейнера, если СУБД находится в соседнем контейнере
-# docker.for.mac.host.internal - host-машина по отношению к контейнеру на Mac
-# docker.for.win.host.internal - host-машина по отношению к контейнеру на Windows
+# pguser - логин и пароль основного пользователя в PostgreSQL, которые заданы в контейнере postgres
+# postgres - название контейнера, в котором работает PostgreSQL
+# 5432 - стандартный порт, который слушает PostgreSQL
+# study_on - название БД (для StudyOn.Billing будет соответственно study_on_billing)
 ```
 
 ## Пример настроек Doctrine в связке с PostgreSQL
@@ -43,6 +43,11 @@ doctrine:
 ## Часто используемые команды Doctrine
 
 ```bash
+# Create the database
+bin/console doctrine:database:create
+# The same in docker container
+docker-compose exec php bin/console doctrine:database:create
+
 # Execute a sql
 bin/console doctrine:query:sql "select 1"
 # The same in short syntax
