@@ -1,23 +1,5 @@
 # Lesson 1
 
-## Создание пользователей и БД в PostgreSQL
-
-Заводим пользователя `study_on`.
-```bash
-$ createuser -P -e study_on
-Enter password for new role: study_on
-Enter it again: study_on
-CREATE ROLE study_on PASSWORD 'md582280c92998413dc4bd3ae4e33835049' NOSUPERUSER NOCREATEDB NOCREATEROLE INHERIT LOGIN;
-```
-
-Cоздаем 2 базы данных, владельцем которых будет данный пользователь.
-```bash
-$ createdb -O study_on -e study_on
-CREATE DATABASE study_on OWNER study_on;
-$ createdb -O study_on -e study_on_billing
-CREATE DATABASE study_on_billing OWNER study_on;
-```
-
 ## Создание скелетонов проектов
 
 Создаем папку под проекты.
