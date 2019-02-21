@@ -103,5 +103,5 @@ $ make fixtload
 
 Установить пакет Composer
 ```bash
-$ make install some/package
+$ make require some/package
 ```

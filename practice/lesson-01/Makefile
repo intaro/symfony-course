@@ -21,5 +21,5 @@ migrate:
 fixtload:
 	@${CONSOLE} doctrine:fixtures:load
 
-install:
-	@${COMPOSER} install $2
+require:
+	@${COMPOSER} require $2
