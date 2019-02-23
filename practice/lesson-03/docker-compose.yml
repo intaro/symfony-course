@@ -24,7 +24,7 @@ services:
     build: docker/images/php
     working_dir: /app
     volumes:
-      - ${PWD}:/app:delegated
+      - ${PWD}:/app
       - ${HOME}/.composer:/root/.composer
     environment:
       - COMPOSER_ALLOW_SUPERUSER=1
