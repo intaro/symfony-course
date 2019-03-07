@@ -8,7 +8,25 @@ DATABASE_URL=pgsql://pguser:pguser@postgres:5432/study_on_test
 
 ## Создание тестовой БД
 
-```
+```bash
 docker-compose exec php bin/console doctrine:database:create --env=test
 docker-compose exec php bin/console doctrine:migrations:migrate --env=test
+```
+
+## Make-команды для запуска тестов
+
+```
+phpunit:
+	@${PHP} bin/phpunit
+```
+
+Запуск тестов:
+```bash
+make phpunit
+```
+
+## Генерация заготовок классов тестов
+
+```
+docker-compose exec php bin/console make:functional-test
 ```
