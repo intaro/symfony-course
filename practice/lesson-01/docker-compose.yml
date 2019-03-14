@@ -25,7 +25,7 @@ services:
     working_dir: /app
     volumes:
       - ${PWD}:/app
-      - ${HOME}/.composer:/root/.composer
+      - /usr/local/bin/composer:/usr/local/bin/composer
     environment:
       - COMPOSER_ALLOW_SUPERUSER=1
     links:
