@@ -99,3 +99,10 @@ docker-compose exec php composer require nelmio/api-doc-bundle twig asset
 ```bash
 docker-compose exec php composer require symfony/dom-crawler symfony/browser-kit --dev
 ```
+
+## Получение системного UserPasswordEncoder
+
+```php
+/** @var UserPasswordEncoderInterface $encoder */
+$encoder = self::$kernel->getContainer()->get('security.password_encoder');
+```
