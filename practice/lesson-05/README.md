@@ -23,15 +23,6 @@ docker-compose exec php bin/console make:user
  */
 ```
 
-
-## Применение миграций
-
-```bash
-docker-compose exec php bin/console doctrine:database:create
-make migration
-make migrate
-```
-
 ## Настройка JWT
 
 Установите бандл
