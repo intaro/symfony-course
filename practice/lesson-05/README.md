@@ -23,15 +23,6 @@ docker-compose exec php bin/console make:user
  */
 ```
 
-
-## Применение миграций
-
-```bash
-docker-compose exec php bin/console doctrine:database:create
-make migration
-make migrate
-```
-
 ## Настройка JWT
 
 Установите бандл
@@ -48,7 +39,7 @@ openssl genrsa -out config/jwt/private.pem -aes256 4096
 openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem
 ```
 
-## Проверка api
+## Проверка API
 
 ```bash
 curl -X POST -H "Content-Type: application/json" http://billing.study-on.local:82/api/auth -d '{"username":"user@intaro.ru","password":"mypass"}'
