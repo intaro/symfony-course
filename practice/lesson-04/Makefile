@@ -31,9 +31,4 @@ encore_prod:
 	@${COMPOSE} run node yarn encore production
 
 phpunit:
-	@${CONSOLE} doctrine:database:create --env=test --if-not-exists
-	@${CONSOLE} doctrine:migrations:migrate --env=test -n
 	@${PHP} bin/phpunit
-
-rebuild:
-	$(COMPOSE) up -d --no-deps --build $2
