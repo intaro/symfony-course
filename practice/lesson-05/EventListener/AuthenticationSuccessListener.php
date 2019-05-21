@@ -15,6 +15,7 @@ class AuthenticationSuccessListener
         $data = $event->getData();
         $user = $event->getUser();
 
-        //add your code
+        // add your code
+        // ...
     }
 }
