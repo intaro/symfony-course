@@ -7,6 +7,8 @@
 $ docker-compose exec php composer require "gesdinet/jwt-refresh-token-bundle"
 ```
 
+Сгенерируйте и примените миграции.
+
 ### Настройка метода обновления токена
 ```
 use Gesdinet\JWTRefreshTokenBundle\Model\RefreshTokenManagerInterface;
@@ -33,6 +35,25 @@ class SomeController extends AbstractController
     Gesdinet\JWTRefreshTokenBundle\Service\RefreshToken:
         alias: "gesdinet.jwtrefreshtoken"
 ```
+
+Разрешите анонимный доступ к методу обновления токена в config/packages/security.yaml
+
+```
+    firewalls:
+    # ...
+        refresh:
+            pattern:  ^/api/v1/token/refresh
+            stateless: true
+            anonymous: true
+    # ...
+
+    access_control:
+        # ...
+        - { path: ^/api/v1/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        # ...
+# ... 
+```
+
 
 ### Создание refreshToken при регистрации пользователя 
 
