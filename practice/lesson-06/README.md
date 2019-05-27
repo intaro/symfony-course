@@ -1,17 +1,6 @@
 # Lesson 6
 
-## Настройка сети между контейнерами
-
-В docker-compose.yml проекта StudyOn укажите:
-
-```
-networks:
-  default:
-    external:
-      name: studyonbilling_default
-```
-
-**studyonbilling_default** — название сети биллинга, может отличаться в зависимости от версии докера. Полный список сетей можно просмотреть командой: 
+## Просмотр списка сетей докера
 
 ```$ docker network ls```
 
