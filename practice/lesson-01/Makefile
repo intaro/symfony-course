@@ -20,6 +20,3 @@ migrate:
 
 fixtload:
 	@${CONSOLE} doctrine:fixtures:load
-
-require:
-	@${COMPOSER} require $2

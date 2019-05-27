@@ -2,50 +2,122 @@
 
 ## Создание скелетонов проектов
 
-Создаем папку под проекты.
+Создаем папки под проекты.
 ```bash
-cd ~ && mkdir sf-lessons
+cd ~ 
+mkdir sf-lessons sf-lessons/study-on sf-lessons/study-on.billing 
+cd sf-lessons/study-on
+
 ```
 
-Создаем проект StudyOn из веб-скелетона (не забываем подставить свое имя в адресе git-репозитория).
+### Настройка проекта studyOn
+
+#### Настройка docker 
+
+Размещаем в директории study-on файл [docker-compose.yml](docker-compose.yml) и директорию [docker/](docker) из материалов урока.
+
+
+Cоздаем файл .env, прописываем в нем переменнную NGINX_PORT, которая потребуется для запуска контейнера
 ```bash
-cd ~/sf-lessons
-composer create-project symfony/website-skeleton study-on
-cd study-on
-git init .
-git remote add origin https://github.com/sfuser/study-on.git
+echo 'NGINX_PORT=81' >> .env
 ```
 
-Создаем проект StudyOn.Billing из обычного скелетона. Также сразу добавим PHPUnit для тестов (в website-skeleton он устанавливается сразу).
+Переименовываем файл конфигурации для nginx  
 ```bash
-cd ~/sf-lessons
-composer create-project symfony/skeleton study-on.billing
-cd study-on.billing
-composer req symfony/phpunit-bridge
-git init .
-git remote add origin https://github.com/sfuser/study-on.billing.git
+mv docker/hosts/app.conf.dist docker/hosts/app.conf  
+```
+и указываем в нем домен study-on.local 
+
+```bash
+$ cat docker/hosts/app.conf 
+server {
+    server_name study-on.local;
+    include symfony;
+}
 ```
 
-## Указание порта, на котором будет работать Nginx
-
-Для запуска проекта, необходимо указать порт Nginx, по которому вы будете обращаться к проекту:
-```bash
-$ cat >> .env
-
-# external port for nginx
-NGINX_PORT=84
-^C
-```
-
-## Регистрация доменов сервисов в локальных хостах
-
-Чтобы обращаться к проектам по доменам, необходимо зарегистрировать их в локальном hosts-файле:
+Чтобы обращаться к проекту по домену, необходимо зарегистрировать его в локальном hosts-файле:
 ```bash
 $ sudo cat >> /etc/hosts
 
 # symfony lessons
-127.0.0.1 study-on.local billing.study-on.local
-^C
+127.0.0.1 study-on.local
+```
+
+
+Запускаем контейнер
+```bash
+docker-compose up -d
+```
+
+#### Создание проекта
+
+Создаем проект StudyOn из веб-скелетона
+```bash
+docker-compose exec php composer create-project symfony/website-skeleton study-on
+```
+
+Проект создается в поддиректории study-on
+Перемещаем файлы на уровень выше (в текущую директорию)
+```bash
+cp -a study-on/. .
+rm -r study-on/
+```
+
+Наш .env-файл оказался переезаписан, так что снова добавляем в него переменную NGINX_PORT для докера
+
+```bash
+echo 'NGINX_PORT=81' >> .env
+```
+
+В результате проект должен открыться в браузере по адресу http://study-on.local:81/
+
+
+Добавляем проект в git (не забываем подставить свое имя в адресе git-репозитория).
+```
+git init .
+git remote add origin https://github.com/sfuser/study-on.git
+```
+
+### Настройка проекта studyOn.Billing
+
+Перейдем в папку проекта studyOn.Billing
+
+```bash
+cd ~/sf-lessons/study-on.billing
+```
+
+#### Настройка docker 
+ 
+Выполним настройки по аналогии со StudyOn. Отличия следующие:
+
+* порт для nginx  `NGINX_PORT=82`
+
+* домен в app.conf и hosts `billing.study-on.local`
+
+
+#### Создание проекта
+
+Вместо symfony/website-skeleton используем более легковесный symfony/skeleton. Отдельно доустанавливаем phpunit
+
+```bash
+docker-compose exec php composer create-project symfony/skeleton study-on.billing
+
+cp -a study-on.billing/. .
+rm -r study-on.billing/
+
+echo 'NGINX_PORT=82' >> .env
+
+docker-compose exec php composer require symfony/phpunit-bridge
+
+```
+
+Проект должен открыться в браузере по адресу http://billing.study-on.local:82/
+
+Добавляем проект в git (не забываем подставить свое имя в адресе git-репозитория).
+```
+git init .
+git remote add origin https://github.com/sfuser/study-on.billing.git
 ```
 
 ## Работа с Docker Compose
@@ -81,7 +153,7 @@ $ make up
 $ make down
 ```
 
-Отчистить кеш Symfony
+Очистить кеш Symfony
 ```bash
 $ make clear
 ```
@@ -99,9 +171,4 @@ $ make migrate
 Загрузить фикстуры
 ```bash
 $ make fixtload
-```
-
-Установить пакет Composer
-```bash
-$ make require some/package
 ```
