@@ -45,7 +45,7 @@ MAILER_URL=smtp://mailhog:1025
 
 Разместите в проекте сервис [Twig](study-on.billing/src/Service/Twig.php) из материалов урока
 
-Подключите его в вашем комманде следующим образом 
+Используйте его в вашем комманде следующим образом 
 
 ```
 <?php
@@ -74,5 +74,5 @@ class SomeCommand extends Command
         );
         //your code
     }
-    
+}
 ```
