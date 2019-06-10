@@ -1,8 +1,8 @@
-# Lesson 6
+# Lesson 7
 
-## Настройка JWTRefreshTokenBundle в study-on.billing
+## Настройка JWTRefreshTokenBundle в StudyOn.Billing
 
-Из директории проекта study-on.billing выполните:
+Из директории проекта StudyOn.Billing выполните:
 ```bash
 $ docker-compose exec php composer require "gesdinet/jwt-refresh-token-bundle"
 ```
