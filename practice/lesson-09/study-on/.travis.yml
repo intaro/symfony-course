@@ -31,9 +31,7 @@ install:
   - docker-compose exec php bin/console doctrine:database:create --env=test
   - docker-compose exec php bin/console doctrine:migrations:migrate --env=test --no-interaction
   - docker-compose exec php bin/console doctrine:fixtures:load --env=test --no-interaction
-  - docker-compose exec php composer require encore
   - docker-compose run node yarn install
-  - docker-compose run node yarn add @symfony/webpack-encore --dev
   - docker-compose run node yarn encore dev
 
 script:
