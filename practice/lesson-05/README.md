@@ -50,11 +50,6 @@ curl -X POST -H "Content-Type: application/json" http://billing.study-on.local:8
 {"token": "eyJ0eXAiOiJKV1QiLCJh..."}
 ```
 
-Расширенный ответ
-```bash
-{"token": "eyJ0eXAiOiJKV1QiLCJh...", "roles": ["ROLE_USER", "ROLE_SUPER_ADMIN"]}
-```
-
 ## Установка бандлов для регистрации
 
 ```bash
