@@ -42,7 +42,7 @@ openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem
 ## Проверка API
 
 ```bash
-curl -X POST -H "Content-Type: application/json" http://billing.study-on.local:82/api/auth -d '{"username":"user@intaro.ru","password":"mypass"}'
+curl -X POST -H "Content-Type: application/json" http://billing.study-on.local:82/api/v1/auth -d '{"username":"user@intaro.ru","password":"mypass"}'
 ```
 
 Должен вернуться ответ вида
