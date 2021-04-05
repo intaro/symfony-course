@@ -92,3 +92,25 @@ docker-compose exec php composer require symfony/dom-crawler symfony/browser-kit
 /** @var UserPasswordEncoderInterface $encoder */
 $encoder = self::$kernel->getContainer()->get('security.password_encoder');
 ```
+
+## Передача заголовка авторизации в тестах
+
+Чтобы при отправке запроса к api добавить заголовок "Authorization: Bearer {token}", нужно указать его следующим образом
+
+```php
+<?php
+namespace App\Tests;
+
+class BillingUserControllerTest extends AbstractTest
+{
+    public function testCurrentUser()
+    {
+        $client = static::createClient();
+        //...
+        $client->request('GET', '/api/v1/users/current', [], [], ['HTTP_AUTHORIZATION' => 'Bearer '. $token]);
+        //....
+    }
+    
+ }
+```
+
