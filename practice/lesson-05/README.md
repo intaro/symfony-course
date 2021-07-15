@@ -58,11 +58,31 @@ docker-compose exec php composer require jms/serializer-bundle symfony/validator
 
 
 ## DTO
+В структуру класса DTO входят переменные $username и $password.
+
+Для валидации полей нужно использовать:
+
+```php
+namespace App\Dto;
+
+use Symfony\Component\Validator\Constraints as Assert;
+
+class UserDto
+{
+    /**
+     * @Assert\NotBlank(message="Name is mandatory")
+     * @Assert\Email( message="Invalid email address" )
+     */
+    public string $username;
+    //...
+}
+```
 
 Разбор и валидация запроса в экшне контроллера упрощенно должны выглядеть следующим образом:
 
 ```bash
-$userDto = $this->deserialize($request, \App\Model\Request\User::class);
+$serializer = SerializerBuilder::create()->build();
+$userDto = $serializer->deserialize($request->getContent(), UserDto::class, 'json');
 $errors = $validator->validate($userDto);
 ```
 
@@ -70,6 +90,16 @@ $errors = $validator->validate($userDto);
 
 ```bash
 $user = \App\Entity\User::fromDto($userDto);
+```
+
+## Получение текущего пользователя
+Чтобы получить текущего пользователя нужно получить токен и ваш публичный ключ. После чего нужно проверить токен и декодировать его, с помощью функции:
+```php
+ $jwt = (array)JWT::decode(
+                    $token,
+                    $public_key,
+                    [$algorithm]
+                );
 ```
 
 ## Документирование
@@ -91,11 +121,11 @@ docker-compose exec php composer require nelmio/api-doc-bundle twig asset
 docker-compose exec php composer require symfony/dom-crawler symfony/browser-kit --dev
 ```
 
-## Получение системного UserPasswordEncoder
+## Получение системного UserPasswordHasher
 
 ```php
-/** @var UserPasswordEncoderInterface $encoder */
-$encoder = self::$kernel->getContainer()->get('security.password_encoder');
+/** @var UserPasswordHasherInterface $hasher */
+$hasher = static::$container->get('security.user_password_hasher');
 ```
 
 ## Передача заголовка авторизации в тестах
