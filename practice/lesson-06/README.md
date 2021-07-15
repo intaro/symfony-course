@@ -11,6 +11,23 @@
 ```bash
 $ docker-compose exec php curl billing.study-on.local
 ```
+## Пример аутентификации
+
+В методе authenticate(Request $request) нужно использовать функцию CustomCredentials() для аутентификаци пользователя через billing:
+```php
+public function authenticate(Request $request): PassportInterface
+{
+    //...
+    return new Passport(
+            new UserBadge($email),
+            new CustomCredentials($checkUser, $credentials),
+            [
+                new CsrfTokenBadge('authenticate', $request->get('_csrf_token')),
+            ]
+        );
+}
+```
+Где $checkUser анонимная функция в которой происходит обращение к billing. В эту функцию передается два параментра: массив данных пользователей $credetioals и сущность User.
 
 ## Тестирование сервисов
 
