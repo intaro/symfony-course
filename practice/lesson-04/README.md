@@ -30,3 +30,20 @@ make phpunit
 ```
 docker-compose exec php bin/console make:functional-test
 ```
+
+## Создание теста
+
+```php
+public function testSomething(): void
+    {
+        $client = AbstractTest::getClient();
+        $url = '/course/';
+
+        $crawler = $client->request('GET', $url);
+        
+        $link = $crawler->selectLink('Подробнее')->link();
+        $crawler = $client->click($link);
+	
+        $this->assertResponseOk();
+    }
+```
