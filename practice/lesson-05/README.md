@@ -58,6 +58,25 @@ docker-compose exec php composer require jms/serializer-bundle symfony/validator
 
 
 ## DTO
+В структуру класса DTO входят переменные $username и $password.
+
+Для валидации полей нужно использовать:
+
+```php
+namespace App\Dto;
+
+use Symfony\Component\Validator\Constraints as Assert;
+
+class UserDto
+{
+    /**
+     * @Assert\NotBlank(message="Name is mandatory")
+     * @Assert\Email( message="Invalid email address" )
+     */
+    public string $username;
+    //...
+}
+```
 
 Разбор и валидация запроса в экшне контроллера упрощенно должны выглядеть следующим образом:
 
