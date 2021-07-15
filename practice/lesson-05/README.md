@@ -78,7 +78,6 @@ $user = \App\Entity\User::fromDto($userDto);
 ```bash
 docker-compose exec php composer require nelmio/api-doc-bundle twig asset
 ```
-Получение пользователя
 Кнопка Authorize сохраняет токен. Для дальнейшего его использования в методе получения пользователя нужно добавить данную анотацию.
 
 ```bash
