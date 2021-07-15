@@ -116,11 +116,11 @@ docker-compose exec php composer require nelmio/api-doc-bundle twig asset
 docker-compose exec php composer require symfony/dom-crawler symfony/browser-kit --dev
 ```
 
-## Получение системного UserPasswordEncoder
+## Получение системного UserPasswordHasher
 
 ```php
-/** @var UserPasswordEncoderInterface $encoder */
-$encoder = self::$kernel->getContainer()->get('security.password_encoder');
+/** @var UserPasswordHasherInterface $hasher */
+$hasher = static::$container->get('security.user_password_hasher');
 ```
 
 ## Передача заголовка авторизации в тестах
