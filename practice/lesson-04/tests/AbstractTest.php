@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests;
 
-use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
-use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DomCrawler\Crawler;
@@ -31,13 +29,13 @@ abstract class AbstractTest extends WebTestCase
         return static::$client;
     }
 
-    protected function setUp()
+    protected function setUp(): void
     {
         static::getClient();
         $this->loadFixtures($this->getFixtures());
     }
 
-    final protected function tearDown()
+    final protected function tearDown(): void
     {
         parent::tearDown();
         static::$client = null;
