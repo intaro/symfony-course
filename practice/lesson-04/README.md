@@ -33,7 +33,7 @@ docker-compose exec php bin/console make:functional-test
 
 ## Создание теста
 
-```
+```php
 public function testSomething(): void
     {
         $client = AbstractTest::getClient();
