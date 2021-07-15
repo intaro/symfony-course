@@ -81,7 +81,8 @@ class UserDto
 Разбор и валидация запроса в экшне контроллера упрощенно должны выглядеть следующим образом:
 
 ```bash
-$userDto = $this->deserialize($request, \App\Model\Request\User::class);
+$serializer = SerializerBuilder::create()->build();
+$userDto = $serializer->deserialize($request->getContent(), UserDto::class, 'json');
 $errors = $validator->validate($userDto);
 ```
 
