@@ -37,7 +37,7 @@ docker-compose exec php bin/console make:functional-test
 public function testSomething(): void
     {
         $client = AbstractTest::getClient();
-        $url = 'http://study-on.local:81/course/';
+        $url = '/course/';
 
         $crawler = $client->request('GET', $url);
         
