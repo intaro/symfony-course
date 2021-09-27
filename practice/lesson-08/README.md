@@ -47,7 +47,7 @@ MAILER_URL=smtp://mailhog:1025
 
 Используйте его в вашем комманде следующим образом 
 
-```
+```php
 <?php
 
 namespace App\Command;
