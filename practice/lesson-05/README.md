@@ -95,7 +95,7 @@ $user = \App\Entity\User::fromDto($userDto);
 ## Получение текущего пользователя
 Чтобы получить текущего пользователя нужно получить токен и ваш публичный ключ. После чего нужно проверить токен и декодировать его, с помощью функции:
 ```php
- $jwt = (array)JWT::decode($token, $public_key, [$algorithm]);
+ $jwt = (array)JWT::decode($token, $publicKey, [$algorithm]);
 ```
 
 ## Документирование
