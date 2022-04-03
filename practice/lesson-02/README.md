@@ -62,5 +62,5 @@ bin/console make:migration
 bin/console doctrine:migrations:migrate
 
 # Revert the migration
-bin/console doctrine:migrations:execute --down 20190203151634
+bin/console doctrine:migrations:execute --down 'DoctrineMigrations\Version20220403203744'
 ```
