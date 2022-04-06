@@ -39,7 +39,7 @@ server {
 
 Чтобы обращаться к проекту по домену, необходимо зарегистрировать его в локальном hosts-файле:
 ```bash
-$ sudo cat >> /etc/hosts
+$ sudo cat /etc/hosts
 
 # symfony lessons
 127.0.0.1 study-on.local
