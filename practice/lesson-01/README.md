@@ -58,6 +58,9 @@ docker-compose up -d
 docker-compose exec php composer create-project symfony/website-skeleton study-on
 ```
 
+На вопрос "Do you want to include Docker configuration from recipes?" отвечаем No, у нас в проекте будут свои конфиги Docker.
+
+
 Проект создается в поддиректории study-on
 Перемещаем файлы на уровень выше (в текущую директорию)
 ```bash
