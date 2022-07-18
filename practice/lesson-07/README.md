@@ -9,40 +9,33 @@ $ docker-compose exec php composer require "gesdinet/jwt-refresh-token-bundle"
 
 Сгенерируйте и примените миграции.
 
-### Настройка метода обновления токена
+### Настройка роута для обновления токена
+#### Symfony 4.4
 ```
-use Gesdinet\JWTRefreshTokenBundle\Model\RefreshTokenManagerInterface;
-...
-       
-class SomeController extends AbstractController
-{
-    
-    ...
-    
-    /**
-     * @Route("/api/v1/token/refresh", name="refresh", methods={"POST"})
-     * ...
-     */
-    public function refresh(Request $request, RefreshToken $refreshService)
-    {
-        return $refreshService->refresh($request);
-    }
-}    
+# config/routes.yaml
+api_refresh_token:
+    path:       /api/v1/token/refresh
+    controller: gesdinet.jwtrefreshtoken::refresh
+# ...
+```
+#### Symfony 5.4+
+```
+# config/routes.yaml
+api_refresh_token:
+    path: /api/v1/token/refresh
+# ...
 ```
 
-В config/services.yaml добавьте алиас для сервиса JWTRefreshTokenBundle
-```
-    Gesdinet\JWTRefreshTokenBundle\Service\RefreshToken:
-        alias: "gesdinet.jwtrefreshtoken"
-```
+### Настройка security.yaml
 
-Разрешите анонимный доступ к методу обновления токена в config/packages/security.yaml
-
+#### Symfony 4.4
 ```
+# config/packages/security.yaml
+security:
     firewalls:
-    # ...
+        # put it before all your other firewall API entries
         refresh:
-            pattern:  ^/api/v1/token/refresh
+            pattern:  ^/api/token/refresh
             stateless: true
             anonymous: true
     # ...
@@ -51,9 +44,29 @@ class SomeController extends AbstractController
         # ...
         - { path: ^/api/v1/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         # ...
-# ... 
+# ...
 ```
+#### Symfony 5.4+
+```
+# config/packages/security.yaml
+security:
+    # this config is only required on Symfony 5.4, you can leave it out on Symfony 6
+    enable_authenticator_manager: true
 
+    firewalls:
+        api_token_refresh:
+            pattern: ^/api/v1/token/refresh
+            stateless: true
+            refresh_jwt:
+                check_path: /api/v1/token/refresh # or, you may use the `api_refresh_token` route name
+    # ...
+
+    access_control:
+        # ...
+        - { path: ^/api/v1/token/refresh, roles: PUBLIC_ACCESS }
+        # ...
+# ...
+```
 
 ### Создание refreshToken при регистрации пользователя 
 
@@ -67,26 +80,18 @@ class SomeController extends AbstractController
 
     public function register(
         ...
+        RefreshTokenGeneratorInterface $refreshTokenGenerator,
         RefreshTokenManagerInterface $refreshTokenManager
     )
     {
         ...
         
-        $refreshToken = $refreshTokenManager->create();
-        $refreshToken->setUsername($user->getEmail());
-        $refreshToken->setRefreshToken();
-        $refreshToken->setValid((new \DateTime())->modify('+1 month'));
-        $refreshTokenManager->save($refreshToken);
-       //в $refreshToken->getRefreshToken() строка токена
-       
+        $refreshToken = $refreshTokenGenerator->createForUserWithTtl(
+            $user,
+            (new \DateTime())->modify('+1 month')->getTimestamp()
+        );
+        $refreshTokenManager->save($refreshToken);      
        
        ...
    }
 }
-```
-В config/services.yaml добавьте алиас для сервиса RefreshTokenManager
-    
-```
-    Gesdinet\JWTRefreshTokenBundle\Model\RefreshTokenManagerInterface:
-        alias: "gesdinet.jwtrefreshtoken.refresh_token_manager"
-```
