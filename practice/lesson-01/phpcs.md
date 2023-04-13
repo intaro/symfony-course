@@ -3,7 +3,7 @@
 Установите [codesniffer](https://github.com/squizlabs/PHP_CodeSniffer) в директории проекта
 
 ```
-composer require squizlabs/php_codesniffer
+docker-compose exec php composer require --dev squizlabs/php_codesniffer
 ```
 
 Скопируйте создавшийся файл phpcs.xml.dist в phpcs.xml, он содержит настройки phpcs, в частности, указание стандарта [PSR-2](https://www.php-fig.org/psr/psr-2/)
