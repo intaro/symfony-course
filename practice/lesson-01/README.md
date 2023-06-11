@@ -5,7 +5,7 @@
 Создаем папки под проекты.
 ```bash
 cd ~ 
-mkdir sf-lessons sf-lessons/study-on sf-lessons/study-on.billing 
+mkdir -p sf-lessons/{study-on,study-on.billing}
 cd sf-lessons/study-on
 
 ```
@@ -53,14 +53,10 @@ docker-compose up -d
 
 #### Создание проекта
 
-Создаем проект StudyOn из веб-скелетона
+Создаем проект StudyOn
 ```bash
-docker-compose exec php composer create-project symfony/website-skeleton study-on
+docker-compose exec php composer create-project symfony/skeleton study-on
 ```
-
-На вопрос "Do you want to include Docker configuration from recipes?" отвечаем No, у нас в проекте будут свои конфиги Docker.
-
-
 Проект создается в поддиректории study-on
 Перемещаем файлы на уровень выше (в текущую директорию)
 ```bash
@@ -68,11 +64,19 @@ cp -a study-on/. .
 rm -r study-on/
 ```
 
-Наш .env-файл оказался переезаписан, так что снова добавляем в него переменную NGINX_PORT для докера
+Наш .env-файл оказался перезаписан, так что снова добавляем в него переменную `NGINX_PORT` для докера
 
 ```bash
 echo 'NGINX_PORT=81' >> .env
 ```
+
+Доустанавливаем `symfony/webapp-pack`
+```
+cd study-on
+docker-compose exec php composer require symfony/webapp-pack
+```
+
+На вопрос "Do you want to include Docker configuration from recipes?" отвечаем **No**, у нас в проекте будут свои конфиги Docker.
 
 В результате проект должен открыться в браузере по адресу http://study-on.local:81/
 
@@ -102,7 +106,7 @@ cd ~/sf-lessons/study-on.billing
 
 #### Создание проекта
 
-Вместо symfony/website-skeleton используем более легковесный symfony/skeleton. Отдельно доустанавливаем phpunit
+Используем только symfony/skeleton. Отдельно доустанавливаем phpunit
 
 ```bash
 docker-compose exec php composer create-project symfony/skeleton study-on.billing
