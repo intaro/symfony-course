@@ -48,9 +48,9 @@ https://symfony.com/doc/current/testing.html#load-dummy-data-fixtures
 
 https://symfony.com/doc/current/bundles/DoctrineFixturesBundle/index.html#writing-fixtures
 
-Установка конкретной версии:
+Установка библиотеки для работы с фикстурами:
 ```bash
-docker-compose exec php composer require --with-all-dependencies doctrine/doctrine-fixtures-bundle:^4.0
+docker-compose exec php composer require --with-all-dependencies doctrine/doctrine-fixtures-bundle
 ```
 
 ## Часто используемые команды Doctrine
