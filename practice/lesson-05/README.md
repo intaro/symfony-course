@@ -39,15 +39,13 @@ openssl genrsa -out config/jwt/private.pem -aes256 4096
 openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem
 ```
 
-## Проверка API
-
-```bash
-curl -X POST -H "Content-Type: application/json" http://billing.study-on.local:82/api/v1/auth -d '{"username":"user@intaro.ru","password":"mypass"}'
-```
-
-Должен вернуться ответ вида
-```bash
-{"token": "eyJ0eXAiOiJKV1QiLCJh..."}
+Убедитесь, что в .env стоит верное значение private key/passphrase
+```yaml
+###> lexik/jwt-authentication-bundle ###
+JWT_SECRET_KEY=%kernel.project_dir%/config/jwt/private.pem
+JWT_PUBLIC_KEY=%kernel.project_dir%/config/jwt/public.pem
+JWT_PASSPHRASE=your-passphrase
+###< lexik/jwt-authentication-bundle ###
 ```
 
 ## Установка бандлов для регистрации
@@ -56,6 +54,20 @@ curl -X POST -H "Content-Type: application/json" http://billing.study-on.local:8
 docker-compose exec php composer require jms/serializer-bundle symfony/validator
 ```
 
+До реализации основного функционала создания пользователей, можно добавить нескольких с помощью фикстур. Можно использовать UserPasswordHasherInterface
+
+Подключение к БД в контейнере через консоль:
+```bash
+docker exec -it study-onbilling_postgres_1 psql -U pguser -d study_on_billing
+# study_on_billing/study-on - название БД
+```
+
+## Получение системного UserPasswordHasher
+
+```php
+/** @var UserPasswordHasherInterface $hasher */
+$hasher = static::$container->get('security.user_password_hasher');
+```
 
 ## DTO
 В структуру класса DTO входят переменные $username и $password.
@@ -95,12 +107,24 @@ $user = \App\Entity\User::fromDto($userDto);
 ## Получение текущего пользователя
 Чтобы получить текущего пользователя нужно получить токен и ваш публичный ключ. После чего нужно проверить токен и декодировать его, с помощью функции:
 ```php
- $jwt = (array)JWT::decode($token, $publicKey, [$algorithm]);
+  $decodedJwt = $this->jwtManager->decode($this->tokenStorageInterface->getToken());
 ```
+
+## Проверка API
+
+```bash
+curl -X POST -H "Content-Type: application/json" http://billing.study-on.local:82/api/v1/auth -d '{"username":"user@intaro.ru","password":"mypass"}'
+```
+
+Должен вернуться ответ вида
+```bash
+{"token": "eyJ0eXAiOiJKV1QiLCJh..."}
+```
+
 
 ## Документирование
 
-Установите необходимые бандлы
+Установите необходимые бандлы и сконфигурируйте nelmio_api_doc.yaml
 ```bash
 docker-compose exec php composer require nelmio/api-doc-bundle twig asset
 ```
@@ -117,13 +141,6 @@ docker-compose exec php composer require nelmio/api-doc-bundle twig asset
 docker-compose exec php composer require symfony/dom-crawler symfony/browser-kit --dev
 ```
 
-## Получение системного UserPasswordHasher
-
-```php
-/** @var UserPasswordHasherInterface $hasher */
-$hasher = static::$container->get('security.user_password_hasher');
-```
-
 ## Передача заголовка авторизации в тестах
 
 Чтобы при отправке запроса к api добавить заголовок "Authorization: Bearer {token}", нужно указать его следующим образом
@@ -132,13 +149,12 @@ $hasher = static::$container->get('security.user_password_hasher');
 <?php
 namespace App\Tests;
 
-class BillingUserControllerTest extends AbstractTest
+class BillingUserControllerTest extends WebTestCase
 {
     public function testCurrentUser()
     {
-        $client = static::createClient();
         //...
-        $client->request('GET', '/api/v1/users/current', [], [], ['HTTP_AUTHORIZATION' => 'Bearer '. $token]);
+        $this->client->request('GET', '/api/v1/users/current', [], [], ['HTTP_AUTHORIZATION' => 'Bearer '. $token]);
         //....
     }
     

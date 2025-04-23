@@ -29,6 +29,27 @@ public function authenticate(Request $request): PassportInterface
 ```
 Где $loadUser анонимная функция в которой происходит обращение к billing. В эту функцию строкой передается $credentials. Если нет надобности использовать CustomCredentials(), то нужно заменить new Passport() на new SelfValidatingPassport().
 
+Еще пример упрощенной авторизации в BillingAuthenticator.php
+
+```php
+public function authenticate(Request $request): PassportInterface
+{
+    //...
+    $request->getSession()->set(Security::LAST_USERNAME, $email);
+
+    $userLoader = function ($token): UserInterface {
+        return User::fromDto($this->billingClient->getCurrentUser($token))->setApiToken($token);
+    };
+
+    return new SelfValidatingPassport(
+        new UserBadge($token, $userLoader),
+        [
+            new CsrfTokenBadge('authenticate', $request->get('_csrf_token'))
+        ]
+    );
+}
+```
+
 ## Пример регистрации
 
 Для автоматической аутентификации пользователя после регистрации нужно добавить следующий код: 
