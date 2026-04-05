@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
         curl \
         wget \
         git \
+        unzip \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
         libpng-dev \
@@ -19,7 +20,8 @@ RUN apt-get update && apt-get install -y \
         openssl \
     && docker-php-ext-install -j$(nproc) intl bcmath soap pgsql pdo_pgsql zip \
     && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
-    && docker-php-ext-install -j$(nproc) gd
+    && docker-php-ext-install -j$(nproc) gd \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
