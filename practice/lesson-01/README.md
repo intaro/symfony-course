@@ -48,14 +48,14 @@ $ sudo cat /etc/hosts
 
 Запускаем контейнер
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 #### Создание проекта
 
 Создаем проект StudyOn
 ```bash
-docker-compose exec php composer create-project symfony/skeleton study-on
+docker compose exec php composer create-project symfony/skeleton study-on
 ```
 Проект создается в поддиректории study-on
 Перемещаем файлы на уровень выше (в текущую директорию)
@@ -71,9 +71,8 @@ echo 'NGINX_PORT=81' >> .env
 ```
 
 Доустанавливаем `symfony/webapp-pack`
-```
-cd study-on
-docker-compose exec php composer require symfony/webapp-pack
+```bash
+docker compose exec php composer require symfony/webapp-pack
 ```
 
 На вопрос "Do you want to include Docker configuration from recipes?" отвечаем **No**, у нас в проекте будут свои конфиги Docker.
@@ -109,14 +108,14 @@ cd ~/sf-lessons/study-on.billing
 Используем только symfony/skeleton. Отдельно доустанавливаем phpunit
 
 ```bash
-docker-compose exec php composer create-project symfony/skeleton study-on.billing
+docker compose exec php composer create-project symfony/skeleton study-on.billing
 
 cp -a study-on.billing/. .
 rm -r study-on.billing/
 
 echo 'NGINX_PORT=82' >> .env
 
-docker-compose exec php composer require symfony/phpunit-bridge
+docker compose exec php composer require symfony/phpunit-bridge
 
 ```
 
@@ -130,33 +129,33 @@ git remote add origin https://github.com/sfuser/study-on.billing.git
 
 ## Работа с Docker Compose
 
-Ниже показаны примеры типовых операций с docker-compose. Все операции выполняются в папке, где расположен `docker-compose.yml`.
+Ниже показаны примеры типовых операций с Docker Compose. Все операции выполняются в папке, где расположен `docker-compose.yml`.
 
 Запуск сборки
 ```bash
-$ docker-compose up -d
+$ docker compose up -d
 ```
 
 Остановка работы сборки
 ```bash
-$ docker-compose down
+$ docker compose down
 ```
 
 Запуск команды внутри запущенного контейнера
 ```bash
-$ docker-compose exec php bin/console list
+$ docker compose exec php bin/console list
 ```
 
 ## Работа с make
 
 Пояснения и синтаксис запуска make-команд из [Makefile](Makefile).
 
-Запустить docker-compose
+Запустить Docker Compose
 ```bash
 $ make up
 ```
 
-Остановить docker-compose
+Остановить Docker Compose
 ```bash
 $ make down
 ```
