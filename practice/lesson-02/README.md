@@ -1,14 +1,27 @@
 # Lesson 2
 
+## Подготовка проектов к работе с Doctrine
+
+В `study-on` после установки `symfony/webapp-pack` пакеты Doctrine уже присутствуют в проекте.
+
+В `study-on.billing` после первого урока используется только `symfony/skeleton`, поэтому перед настройкой `DATABASE_URL` и `config/packages/doctrine.yaml` нужно отдельно установить Doctrine:
+
+```bash
+docker compose exec php composer require symfony/orm-pack doctrine/doctrine-migrations-bundle
+```
+
+После этого в проекте появится файл `config/packages/doctrine.yaml`, и можно продолжать настройку подключения к PostgreSQL.
+
 ## Пример настройки подключения к БД
 
 ```
-DATABASE_URL=pgsql://pguser:pguser@postgres:5432/study_on
+DATABASE_URL="postgresql://pguser:pguser@postgres:5432/study_on?serverVersion=18&charset=utf8"
 
 # pguser - логин и пароль основного пользователя в PostgreSQL, которые заданы в контейнере postgres
 # postgres - название контейнера, в котором работает PostgreSQL
 # 5432 - стандартный порт, который слушает PostgreSQL
-# study_on - название БД (для StudyOn.Billing будет соответственно study_on_billing)
+# study_on - название БД (для StudyOn.Billing после установки Doctrine будет соответственно study_on_billing)
+# serverVersion=18 - версия PostgreSQL из docker-образа postgres:18-alpine
 ```
 
 ## Пример настроек Doctrine в связке с PostgreSQL
@@ -25,19 +38,19 @@ doctrine:
     dbal:
         # configure these for your database server
         driver: 'pdo_pgsql'
-        server_version: '11'
+        server_version: '18'
         url: '%env(resolve:DATABASE_URL)%'
-        connections:
-          default:
-            use_savepoints: true
+        profiling_collect_backtrace: '%kernel.debug%'
     orm:
-        auto_generate_proxy_classes: true
+        validate_xml_mapping: true
         naming_strategy: doctrine.orm.naming_strategy.underscore
+        identity_generation_preferences:
+            Doctrine\DBAL\Platforms\PostgreSQLPlatform: identity
         auto_mapping: true
         mappings:
             App:
                 is_bundle: false
-                type: annotation
+                type: attribute
                 dir: '%kernel.project_dir%/src/Entity'
                 prefix: 'App\Entity'
                 alias: App
@@ -50,7 +63,7 @@ https://symfony.com/doc/current/bundles/DoctrineFixturesBundle/index.html#writin
 
 Установка библиотеки для работы с фикстурами:
 ```bash
-docker-compose exec php composer require --with-all-dependencies doctrine/doctrine-fixtures-bundle
+docker compose exec php composer require --with-all-dependencies doctrine/doctrine-fixtures-bundle
 ```
 
 ## Часто используемые команды Doctrine
@@ -60,14 +73,14 @@ docker-compose exec php composer require --with-all-dependencies doctrine/doctri
 php bin/console doctrine:database:create
  
 # The same in docker container
-docker-compose exec php bin/console doctrine:database:create
+docker compose exec php bin/console doctrine:database:create
 
 # Execute a sql
 php bin/console doctrine:query:sql "select 1"
 # The same in short syntax
 php bin/console do:query:sql "select 1"
 # The same in docker container
-docker-compose exec php bin/console doctrine:query:sql "select 1"
+docker compose exec php bin/console doctrine:query:sql "select 1"
 
 # Create a empty migration
 php bin/console make:migration
