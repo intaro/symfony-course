@@ -2,28 +2,42 @@
 
 ## Пример настройки подключения к тестовой БД
 
+Если в проекте для окружения `test` уже используется `doctrine.dbal.dbname_suffix`, не добавляйте суффикс `_test` в `DATABASE_URL` вручную.
+
 ```
-DATABASE_URL=pgsql://pguser:pguser@postgres:5432/study_on_test
+DATABASE_URL=pgsql://pguser:pguser@postgres:5432/study_on
 ```
 
-Для установки версии и ее зависимостей для php8.4
+Для установки фикстур:
 ```bash
-composer require --with-all-dependencies doctrine/doctrine-fixtures-bundle:^4.0
+composer require --dev doctrine/doctrine-fixtures-bundle
 ```
+
+Для изоляции тестов по БД:
+
+```bash
+composer require --dev dama/doctrine-test-bundle
+```
+
+После установки `DAMADoctrineTestBundle` проверьте:
+
+- что bundle подключен в `config/bundles.php` для окружения `test`;
+- что PHPUnit extension подключен в `phpunit.dist.xml`;
+- что используется совместимая версия `phpunit/phpunit`.
 
 ## Создание и настройка тестовой БД
 
 ```bash
-docker-compose exec php bin/console doctrine:database:create --env=test
-docker-compose exec php bin/console doctrine:migrations:migrate --env=test
-docker-compose exec php bin/console do:fi:load --env=test
+docker compose exec php php bin/console doctrine:database:create --env=test
+docker compose exec php php bin/console doctrine:migrations:migrate --env=test --no-interaction
+docker compose exec php php bin/console doctrine:fixtures:load --env=test --no-interaction
 ```
 
 ## Make-команды для запуска тестов
 
 ```
 phpunit:
-	@${PHP} bin/phpunit
+	@${PHP} php bin/phpunit
 ```
 
 Запуск тестов:
@@ -31,10 +45,12 @@ phpunit:
 make phpunit
 ```
 
+При корректной настройке тестового окружения и при отсутствии тестов команда должна успешно запускать PHPUnit и сообщать, что тесты ещё не найдены.
+
 ## Генерация заготовок классов тестов
 
 ```
-docker-compose exec php bin/console make:functional-test
+docker compose exec php php bin/console make:functional-test
 ```
 
 ## Создание теста
@@ -42,21 +58,25 @@ docker-compose exec php bin/console make:functional-test
 Класс с тестами в идеале должен наследовать от WebTestCase или PantherTestCase.
 Достаточно WebTestCase
 
-После каждого теста нужно вернуть состояние БД в исходное состояние, это можно сделать с помощью https://symfony.com/doc/current/testing.html#resetting-the-database-automatically-before-each-test 
-Более подробная информация -https://github.com/dmaicher/doctrine-test-bundle
+После каждого теста состояние БД должно возвращаться к исходному.
+Для этого в задании используется `DAMADoctrineTestBundle`.
+
+Тесты должны быть детерминированными:
+
+- не зависеть от вручную подготовленного состояния БД между запусками;
+- работать с тестовыми фикстурами;
+- проверять пользовательские сценарии через переходы по страницам, ссылки, кнопки и формы.
 
 ```php
 public function testSomething(): void
-    {
-        $client = static::createClient();
-        
-        $url = '/course/';
+{
+    $client = static::createClient();
 
-        $crawler = $client->request('GET', $url);
-        
-        $link = $crawler->selectLink('Подробнее')->link();
-        $crawler = $client->click($link);
-	
-        $this->assertResponseOk();
-    }
+    $crawler = $client->request('GET', '/courses');
+
+    $link = $crawler->selectLink('Подробнее')->link();
+    $client->click($link);
+
+    $this->assertResponseIsSuccessful();
+}
 ```
