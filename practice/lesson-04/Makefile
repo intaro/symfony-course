@@ -1,4 +1,4 @@
-COMPOSE=docker-compose
+COMPOSE=docker compose
 PHP=$(COMPOSE) exec php
 CONSOLE=$(PHP) bin/console
 COMPOSER=$(PHP) composer
@@ -31,7 +31,7 @@ encore_prod:
 	@${COMPOSE} run node yarn encore production
 
 phpunit:
-	@${PHP} bin/phpunit
+	@${PHP} php bin/phpunit
 
 # В файл local.mk можно добавлять дополнительные make-команды,
 # которые требуются лично вам, но не нужны на проекте в целом
