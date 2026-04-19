@@ -4,16 +4,16 @@
 
 Из директории проекта StudyOn.Billing выполните команды:
 ```bash
-$ docker-compose exec php composer require "gesdinet/jwt-refresh-token-bundle"
-$ docker-compose exec php bin/console do:mi:diff
-$ docker-compose exec php bin/console do:mi:mi -n
+docker compose exec php composer require "gesdinet/jwt-refresh-token-bundle"
+docker compose exec php bin/console doctrine:migrations:diff
+docker compose exec php bin/console doctrine:migrations:migrate -n
 ```
 
 Будет создана таблица refresh_tokens
 
-Команда для подключения к бд через консоль: 
+Команда для подключения к БД через консоль:
 ```bash
-docker exec -it study-onbilling_postgres_1 psql -U pguser -d study_on_billing
+docker compose exec postgres psql -U pguser -d study_on_billing
 # study_on_billing/study-on - название БД
 ```
 
@@ -52,7 +52,7 @@ security:
     firewalls:
         # put it before all your other firewall API entries
         refresh:
-            pattern:  ^/api/token/refresh
+            pattern: ^/api/v1/token/refresh
             stateless: true
             anonymous: true
     # ...
@@ -67,9 +67,6 @@ security:
 ```yaml
 # config/packages/security.yaml
 security:
-    # this config is only required on Symfony 5.4, you can leave it out on Symfony 6
-    enable_authenticator_manager: true
-
     firewalls:
         api_token_refresh:
             pattern: ^/api/v1/token/refresh
@@ -87,24 +84,24 @@ security:
 
 #### Symfony 7.2
 
-в security.yaml refresh_token файрвол должен находиться перед api (или следуйте инструкции в https://github.com/markitosgv/JWTRefreshTokenBundle/blob/master/README.md)
+В `security.yaml` firewall для refresh-токена должен находиться перед `api` (или следуйте инструкции в [README бандла](https://github.com/markitosgv/JWTRefreshTokenBundle/blob/master/README.md).
 
 ```yaml
 firewalls:
     api_token_refresh:
-        pattern: /token/refresh
+        pattern: ^/api/v1/token/refresh
         stateless: true
-        provider: app_user_provider
         refresh_jwt:
-            check_path: /token/refresh
+            check_path: /api/v1/token/refresh
+    api:
         ...
-    api: 
-        ...
-    access_control:
-        ...
+
+access_control:
+    - { path: ^/api/v1/token/refresh, roles: PUBLIC_ACCESS }
+    ...
 ```
 
-### Создание refreshToken при регистрации пользователя 
+### Создание refreshToken при регистрации пользователя
 
 ```php
 use Gesdinet\JWTRefreshTokenBundle\Model\RefreshTokenManagerInterface;
@@ -124,7 +121,7 @@ class SomeController extends AbstractController
         
         $refreshToken = $refreshTokenGenerator->createForUserWithTtl(
             $user,
-            (new \DateTime())->modify('+1 month')->getTimestamp()
+            30 * 24 * 3600 // TTL в секундах (30 дней)
         );
         $refreshTokenManager->save($refreshToken);      
        
@@ -137,5 +134,11 @@ class SomeController extends AbstractController
 Для проверки запросами с хоста: 
 ```bash
 curl -X GET -H "Authorization: Bearer PLACE_HERE_TOKEN" 'http://billing.study-on.local:82/api/v1/users/current'
-curl -X POST -d refresh_token="PLACE_HERE_TOKEN" 'http://billing.study-on.local:82/api/v1/users/current'
+curl -X POST -d "refresh_token=PLACE_HERE_REFRESH_TOKEN" 'http://billing.study-on.local:82/api/v1/token/refresh'
+```
+
+Для проверки из контейнера `php` в StudyOn.Billing:
+```bash
+docker compose exec php curl -sS -X POST http://nginx/api/v1/token/refresh \
+  -d "refresh_token=PLACE_HERE_REFRESH_TOKEN"
 ```
