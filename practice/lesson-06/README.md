@@ -2,53 +2,50 @@
 
 ## Просмотр списка сетей докера
 
-```$ docker network ls```
+```bash
+docker network ls
+```
 
 
 ## Проверка сети между контейнерами
 
-Из директории проекта studyOn выполните:
+Из директории проекта `study-on` выполните:
 ```bash
-$ docker-compose exec php curl billing.study-on.local
+docker compose exec php curl -sS http://billing.study-on.local
 ```
+
+Если не работает, проверьте:
+- контейнер nginx в billing имеет имя `billing.study-on.local`;
+- проект `study-on` подключен к внешней сети billing;
+- имя сети в `study-on/docker-compose.yml` совпадает с фактическим из `docker network ls`.
+
 ## Пример авторизации
 
-В методе authenticate(Request $request) нужно использовать функцию UserBadge() для загрузки пользователя через billing и функцию CustomCredentials() для проверки.
-```php
-public function authenticate(Request $request): PassportInterface
-{
-    //...
-    return new Passport(
-            new UserBadge($credentials, $loadUser),
-            new CustomCredentials($checkUser, $credentials['email']),
-            [
-                new CsrfTokenBadge('authenticate', $request->get('_csrf_token')),
-            ]
-        );
-}
-```
-Где $loadUser анонимная функция в которой происходит обращение к billing. В эту функцию строкой передается $credentials. Если нет надобности использовать CustomCredentials(), то нужно заменить new Passport() на new SelfValidatingPassport().
+В актуальном Symfony удобно использовать `SelfValidatingPassport` и загружать пользователя через `UserBadge` callback.
 
-Еще пример упрощенной авторизации в BillingAuthenticator.php
+Идея реализации:
+- взять `email` и `password` из формы;
+- сохранить `LAST_USERNAME` в сессию;
+- обратиться в billing (`/api/v1/auth`) и получить JWT-токен;
+- по токену запросить текущего пользователя (`/api/v1/users/current`);
+- собрать `User` (email, roles, apiToken);
+- вернуть `SelfValidatingPassport` с `CsrfTokenBadge` и `RememberMeBadge`;
+- при ошибке авторизации бросать `CustomUserMessageAuthenticationException`;
+- при недоступности billing показать пользователю сообщение о временной недоступности сервиса.
 
 ```php
 public function authenticate(Request $request): PassportInterface
 {
-    //...
-    $request->getSession()->set(Security::LAST_USERNAME, $email);
-
-    $userLoader = function ($token): UserInterface {
-        return User::fromDto($this->billingClient->getCurrentUser($token))->setApiToken($token);
-    };
-
-    return new SelfValidatingPassport(
-        new UserBadge($token, $userLoader),
-        [
-            new CsrfTokenBadge('authenticate', $request->get('_csrf_token'))
-        ]
-    );
+    // 1) Получите email/password из request.
+    // 2) Вызовите billingClient->auth(...), обработайте ошибку/отсутствие token.
+    // 3) Вызовите billingClient->getCurrentUser($token), получите username/roles.
+    // 4) Соберите App\Security\User и положите туда apiToken.
+    // 5) Верните SelfValidatingPassport(new UserBadge(...), [CsrfTokenBadge, RememberMeBadge]).
 }
 ```
+
+Важно для `security.yaml`:
+- используйте `custom_authenticators` (массив), а не устаревший `custom_authenticator`.
 
 ## Пример регистрации
 
@@ -71,19 +68,38 @@ public function register(Request $request,  UserAuthenticatorInterface $authenti
 
 ## Тестирование сервисов
 
-Создайте mock-класс для BillingClient
+Создайте mock-класс для BillingClient:
+
 ```php
 namespace App\Tests\Mock;
 
 use App\Service\BillingClient;
 
-class BillingClientMock extends BillingClient
+final class BillingClientMock extends BillingClient
 {
     //...
 }
 ```
 
-Подмените оригинальный сервис в тестах
+Рекомендуемый способ для актуального Symfony: подменять сервис на уровне `config/services_test.yaml`, а не через `$container->set()` в каждом тесте.
+
+```yaml
+# config/services_test.yaml
+services:
+    App\Tests\Mock\BillingClientMock:
+        public: true
+
+    App\Service\BillingClient:
+        alias: App\Tests\Mock\BillingClientMock
+        public: true
+```
+
+В тестах:
+- используйте обычный `createClient()`;
+- если тест делает несколько последовательных запросов, добавляйте `$client->disableReboot();`.
+
+Если нужен вариант с ручной подменой в тесте:
+
 ```php
 $client = static::createClient();
 
@@ -91,8 +107,8 @@ $client = static::createClient();
 $client->disableReboot();
 
 $client->getContainer()->set(
-    'App\Service\BillingClient', 
-    new BillingClientMock('')
+    App\Service\BillingClient::class,
+    new BillingClientMock()
 );
 
 $client->request(...);
